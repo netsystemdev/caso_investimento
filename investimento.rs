@@ -387,6 +387,13 @@
 
 
 
+                     // <' _ estimativa de rentabilidade em meses : max. 24 meses , tanto carteira conservadora ou arroj _ '> 
+
+
+                     fn get_margem_rentabilidade(&self , meses : i16 ) -> Result<() , StackTraceException>; 
+
+
+
 
 
           }
@@ -889,6 +896,193 @@
                      Ok(())
                  }
 
+
+
+
+
+                 // <' _ funcao mestre : projecao de rentabilidade  ex: minino : 6 meses / max 24 meses _ '>
+
+
+                  fn get_margem_rentabilidade(&self , meses : i16 ) -> Result<() , StackTraceException> 
+
+                  {
+
+
+                       let mut _enum_class_carteiras_acoes = self.get_carteira();
+
+                       let mut aporte_valor : f64 = *self.get_aporte_inv();    // <' _ desreferencia _ '>
+                       
+
+
+                       // <'_ pre validacao dos meses ' _ >
+
+
+                       if meses < 6 || meses > 24 {
+
+
+                                 return Err(StackTraceException::MEMORY_ARITHMETIC_EXCEPTION) 
+
+                       }
+
+
+
+                       // _ <' _ caso nao haja erros _ '> 
+
+
+                       let _  = match _enum_class_carteiras_acoes {
+
+
+                                
+                               CarteirasAcoesInvestidor::CONSERV_RENDA_FIXA => {
+
+
+                                     let mut constant_margem : f64 = 0.045;   // <'_ margem ficticia de 4.5% / mes '_> 
+
+
+                                          for i in 1 .. meses {
+
+
+                                                  println!("MES   -  {}  /  RENTABILIDADE MENSAL  %/m :  {:.2}" , i , aporte_valor * constant_margem);
+
+
+                                          }
+
+
+
+                               }, 
+
+
+
+
+
+                               CarteirasAcoesInvestidor::CONSERV_RENDA_SAUDAVEL => {
+
+  
+                                       let mut constant_margem : f64 = 0.05;   // <'_ margem ficticia de 5.0% / mes '_> 
+
+                             
+                                           for i in 1 ..=meses {
+
+
+                                                  println!("MES   -  {}  /  RENTABILIDADE MENSAL  %/m :  {:.2}" , i , aporte_valor * constant_margem);
+
+                                           }
+
+
+                               }, 
+
+
+
+                               CarteirasAcoesInvestidor::CONSERV_RENDA_MASTER => {
+
+
+
+                                       let mut constant_margem : f64 = 0.650;   // <'_ margem ficticia de 6.50% / mes '_> 
+
+                             
+                                           for i in 1 ..=meses {
+
+
+                                                  println!("MES   -  {}  /  RENTABILIDADE MENSAL  %/m :  {:.2}" , i , aporte_valor * constant_margem);
+
+                                           }
+
+
+                               },
+
+
+
+
+
+
+                               CarteirasAcoesInvestidor::ARROJ_MERCADO_INV => {
+
+
+                                          let mut constant_margem : f64 = 0.1050;   // <'_ margem ficticia de 10.50% / mes '_> 
+
+                             
+                                           for i in 1 ..=meses {
+
+
+                                                  println!("MES   -  {}  /  RENTABILIDADE MENSAL  %/m :  {:.2}" , i , aporte_valor * constant_margem);
+
+                                           }
+         
+
+
+                               }, 
+
+
+
+
+                               CarteirasAcoesInvestidor::BANCO_SEGURO_PGBK => {
+
+
+                                          let mut constant_margem : f64 = 0.12;   // <'_ margem ficticia de 12.% / mes '_> 
+
+                             
+                                           for i in 1 ..=meses {
+
+
+                                                  println!("MES   -  {}  /  RENTABILIDADE MENSAL  %/m :  {:.2}" , i , aporte_valor * constant_margem);
+
+                                           }
+         
+
+
+                               }, 
+
+
+
+
+                               CarteirasAcoesInvestidor::INSV_INTERNACIONAL_ARROJ => {
+
+
+                                           let mut constant_margem : f64 = 0.1650;   // <'_ margem ficticia de 12.% / mes '_> 
+
+                             
+                                           for i in 1 ..=meses {
+
+
+                                                  println!("MES   -  {}  /  RENTABILIDADE MENSAL  %/m :  {:.2}" , i , aporte_valor * constant_margem);
+
+                                           }
+         
+
+
+
+
+
+                               },
+
+
+
+
+
+                                // <' _ fora da enumeracao :: exception de memoria de calculo _'> 
+
+
+                               _ => return Err(StackTraceException::MEMORY_ARITHMETIC_EXCEPTION),
+
+
+
+                       }; //end match _ 
+
+
+
+
+
+
+
+                     Ok(())
+
+                  
+
+
+                  } // end-function
+
+
+
      }
  
 
@@ -1248,6 +1442,55 @@
 
    }; 
        
+  
+
+
+
+   
+   // -------------------------------------------------------------------------;; 
+
+
+   println!("\n");
+
+   print!("PROJECAO - MESES   _  ") ; 
+
+   let _campo8 = entry_str_meses_projecao()?;
+
+
+   let _ = match is_correct_numeric(&_campo8) {
+
+         Ok(val) => val ,
+
+         Err(string_error) => return Err(string_error)
+
+               
+ 
+  };
+
+
+  // conversao
+
+
+  let conv_projecao_meses : i16 = match int16_parse_convert(&_campo8) {
+
+
+         Ok(val) => val ,
+
+         Err(parse_exception) => {
+
+                panic!("ParseIntException : Abort Critic Error by failed conversion  :  {} " , parse_exception);
+
+         },
+
+
+  };
+
+
+
+
+
+
+
  
  
    // _ ----------------------------------------------------------------------------------------------------- 
@@ -1324,6 +1567,12 @@
    let _  = obj_class_investidor_perfil.get_requisited_by_currency_value()?;
 
 
+
+   println!("\n"); 
+
+   // <'_  mostra aqui , o indice de projecao final do valor que o usuario verá , de 6 a 24 meses '_>
+
+   let _ = obj_class_investidor_perfil.get_margem_rentabilidade(conv_projecao_meses)?;
 
 
 
@@ -1837,6 +2086,46 @@
         // retiram-se os espaços 
 
         let _trimmer = entry_str_aporte.trim();
+
+       
+        if _trimmer.is_empty() {
+
+              return Err("String.Error :: o campo está vazio!".into())
+        }
+
+
+        
+        
+
+
+
+    Ok(_trimmer.to_string())
+
+
+ }
+
+
+
+
+
+
+ 
+  // <'_ campo extra : meses de projecao do aporte _ '> 
+
+   pub fn entry_str_meses_projecao() -> TStringExceptionValue<String> {
+
+        let mut entry_str_meses_projecao : String = String::new();
+
+        // << entrda de dados >> 
+
+        io::stdout().flush()?; 
+
+        io::stdin().read_line(&mut entry_str_meses_projecao)?;
+
+
+        // retiram-se os espaços 
+
+        let _trimmer = entry_str_meses_projecao.trim();
 
        
         if _trimmer.is_empty() {
